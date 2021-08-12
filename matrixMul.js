@@ -5,9 +5,11 @@ async function matrixMulTest() {
     
     // First Matrix
     const firstMatrix = new Float32Array([
-        2 /* rows */, 4 /* columns */,
+        4 /* rows */, 4 /* columns */,
         1, 2, 3, 4,
-        5, 6, 7, 8
+        5, 6, 7, 8,
+        29, 34, 29, 11,
+        43, 76, 45, 27
     ]);
     
     const gpuBufferFirstMatrix = device.createBuffer({
@@ -21,11 +23,11 @@ async function matrixMulTest() {
     
     // Second Matrix
     const secondMatrix = new Float32Array([
-        4 /* rows */, 2 /* columns */,
-        1, 2,
-        3, 4,
-        5, 6,
-        7, 8
+        4 /* rows */, 4 /* columns */,
+        1, 2, 91, 29,
+        3, 4, 84, 88,
+        5, 6, 67, 39,
+        7, 8, 55, 90
     ]);
     
     const gpuBufferSecondMatrix = device.createBuffer({
