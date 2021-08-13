@@ -25,5 +25,5 @@ jobs:
       - name: get github sha
         shell: powershell
         run: |
-          $env:COMMIT_HASH = $(git rev-parse --short "$GITHUB_SHA")
+          $env:COMMIT_HASH = $(git rev-parse --short $GITHUB_SHA)
           echo $env:COMMIT_HASH
