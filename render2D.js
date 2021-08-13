@@ -26,6 +26,36 @@ async function init() {
         }]
     };
 
+    // Each vertex has a position and a color in XYZW RGBA order.
+    const vertices = new Float32Array([
+        0.0, 0.6, 0, 1, 1, 0, 0, 1,
+        -0.5, -0.6, 0, 1, 0, 1, 0, 1,
+        0.5, -0.6, 0, 1, 0, 0, 1, 1
+    ]);
+
+    const vertexBuffer = device.createBuffer({
+        size: vertices.byteLength,
+        usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        mappedAtCreation: true
+    });
+
+    new Float32Array(vertexBuffer.getMappedRange()).set(vertices);
+    vertexBuffer.unmap();
+
+    const vertexBuffers = [{
+        attributes: [{
+            shaderLocation: 0, //position
+            offset: 0,
+            format: 'float32x4'
+        }, {
+            shaderLocation: 1, //color
+            offset: 16,
+            format: 'float32x4'
+        }],
+        arrayStride: 32,
+        stepMode: 'vertex'
+    }];
+
     const vertexShaderModule = device.createShaderModule({
         code:
         `
