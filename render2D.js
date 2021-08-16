@@ -82,8 +82,31 @@ async function init() {
         `
     });
 
+    const pipelineDescriptor = {
+        vertex: {
+            module: vertexShaderModule,
+            entryPoint: 'vertex_main',
+            buffers: vertexBuffers
+        },
+        fragment: {
+            module: vertexShaderModule,
+            entryPoint: 'fragment_main',
+            targets: [{
+                format: 'bgra8unorm'
+            }]
+        },
+        primitive: {
+            topology: 'triangle-list'
+        }
+    };
+
+    const renderPipeline = device.createRenderPipeline(pipelineDescriptor);
+
     const commandEncoder = device.createCommandEncoder();
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+    passEncoder.setPipeline(renderPipeline);
+    passEncoder.setVertexBuffer(0, vertexBuffer);
+    passEncoder.draw(3);
     // optional draww commands
     passEncoder.endPass();
 
