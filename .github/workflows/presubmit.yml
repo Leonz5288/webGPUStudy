@@ -3,8 +3,8 @@ on:
   release:
     # https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows#release
     types: [published]
-    #  schedule:
-    #    - cron: "*/5 * * * *"
+  schedule:
+    - cron: "*/5 * * * *"
 
 jobs:
   matrix_prep:
@@ -14,8 +14,10 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          [ -z "${{ github.event.action }}" ] && matrix="[{\"with_cc\":\"OFF\",\"python\":\"3.8\"}]"
-          [ -z "${{ github.event.action }}" ] || matrix="[{\"with_cc\":\"OFF\",\"python\":\"3.6\"},{\"with_cc\":\"OFF\",\"python\":\"3.7\"},{\"with_cc\":\"OFF\",\"python\":\"3.8\"},{\"with_cc\":\"OFF\",\"python\":\"3.9\"}]"
+          # For nightly release, we only run on python 3.8
+          [ -z "${{ github.event.action }}" ] && matrix="[{\"release_type\":\"night\",\"python\":\"3.8\"}]"
+          # For production release, we run on four python versions.
+          [ -z "${{ github.event.action }}" ] || matrix="[{\"release_type\":\"prod\",\"python\":\"3.6\"},{\"release_type\":\"prod\",\"python\":\"3.7\"},{\"release_type\":\"prod\",\"python\":\"3.8\"},{\"release_type\":\"prod\",\"python\":\"3.9\"}]"
           echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
 
   build_and_upload_mac:
@@ -35,7 +37,10 @@ jobs:
 
       - name: success
         run: |
-          echo "SUCCESS"
+          if [ $RELEASE_TYPE -eq "night" ]; then echo "NIGHTLY RELEASE"; fi
+          if [ $RELEASE_TYPE -eq "prod" ]; echo "PRODUCTION RELEASE"; fi
+        env:
+          RELEASE_TYPE: ${{ matrix.release_type }}
 
   build_and_upload_windows:
     name: Build and Upload (Windows only)
@@ -55,4 +60,8 @@ jobs:
 
       - name: success
         shell: powershell
-        run: echo "SUCCESS"
+        run: |
+          if ( $env:RELEASE_TYPE -eq "night" ) {echo "NIGHTLY RELEASE"}
+          if ( $env:RELEASE_TYPE -eq "prod" ) {echo "PRODUCTION RELEASE"}
+        env:
+          RELEASE_TYPE: ${{ matrix.release_type }}
