@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: skip three python versions for nightly
         run: |
-          [ -z "${{ github.event.action }}" ] && [ "${{ matrix.python }}" -ne "3.8" ] && exit 1
+          [ -z "${{ github.event.action }}" ] && [ ${{ matrix.python }} -ne 3.8 ] && exit 1
 
       - name: success
         run: echo "SUCCESS"
@@ -42,16 +42,16 @@ jobs:
         include:
           # We use only one python version because it would consume a large
           # amount of github action minutes.
-          - os: macos-latest
+          - os: windows-latest
             python: 3.6
             with_cc: OFF
-          - os: macos-latest
+          - os: windows-latest
             python: 3.7
             with_cc: OFF
-          - os: macos-latest
+          - os: windows-latest
             python: 3.8
             with_cc: OFF
-          - os: macos-latest
+          - os: windows-latest
             python: 3.9
             with_cc: OFF
     runs-on: ${{ matrix.os }}
@@ -62,4 +62,5 @@ jobs:
           if ([string]::IsNullOrEmpty("${{ github.event.action }}") && "${{ matrix.python }}" -ne "3.8") {exit 1}
 
       - name: success
+        shell: powershell
         run: echo "SUCCESS"
