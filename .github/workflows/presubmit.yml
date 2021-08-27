@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: skip three python versions for nightly
         run: |
-          [ -z "${{ github.event.action }}" ] && [ ${{ matrix.python }} != 3.8 ] && exit 0
+          [ -z "${{ github.event.action }}" ] && [ "${{ matrix.python }}" != "3.8" ] && exit 1
 
       - name: success
         run: echo "SUCCESS"
