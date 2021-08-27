@@ -7,60 +7,43 @@ on:
     - cron: "*/5 * * * *"
 
 jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          [ -z "${{ github.event.action }}" ] && matrix="[{\"os\":\"macos-latest\",\"python\":\"3.8\"}]"
+          [ -z "${{ github.event.action }}" ] || matrix="[{\"os\":\"macos-latest\",\"python\":\"3.9\"}]"
+          echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
+
   build_and_upload_mac:
     name: Build and Upload (macOS only)
+    needs: matrix_prep
     strategy:
-      matrix:
-        include:
-          # We use only one python version because it would consume a large
-          # amount of github action minutes.
-          - os: macos-latest
-            python: 3.6
-            with_cc: OFF
-          - os: macos-latest
-            python: 3.7
-            with_cc: OFF
-          - os: macos-latest
-            python: 3.8
-            with_cc: OFF
-          - os: macos-latest
-            python: 3.9
-            with_cc: OFF
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     steps:
-      - name: skip three python versions for nightly
-        run: |
-          [ -z "${{ github.event.action }}" ] && [ "${{ matrix.python }}" != "3.8" ] && exit 1
-
+      #      - name: skip three python versions for nightly
+      #        run: |
+      #          [ -z "${{ github.event.action }}" ] && [ "${{ matrix.python }}" != "3.8" ] && exit 1
+      #
       - name: success
         run: echo "SUCCESS"
 
   build_and_upload_windows:
     name: Build and Upload (Windows only)
+    needs: matrix_prep
     strategy:
-      matrix:
-        include:
-          # We use only one python version because it would consume a large
-          # amount of github action minutes.
-          - os: windows-latest
-            python: 3.6
-            with_cc: OFF
-          - os: windows-latest
-            python: 3.7
-            with_cc: OFF
-          - os: windows-latest
-            python: 3.8
-            with_cc: OFF
-          - os: windows-latest
-            python: 3.9
-            with_cc: OFF
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     steps:
-      - name: skip three python versions for nightly
-        shell: powershell
-        run: |
-          if ([string]::IsNullOrEmpty("${{ github.event.action }}") -and "${{ matrix.python }}" -ne "3.8") {exit 1}
-
+      #      - name: skip three python versions for nightly
+      #        shell: powershell
+      #        run: |
+      #          if ([string]::IsNullOrEmpty("${{ github.event.action }}") -and "${{ matrix.python }}" -ne "3.8") {exit 1}
+      #
       - name: success
         shell: powershell
         run: echo "SUCCESS"
