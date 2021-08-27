@@ -37,8 +37,8 @@ jobs:
 
       - name: success
         run: |
-          if [ "$RELEASE_TYPE" -eq "night" ]; then echo "NIGHTLY RELEASE"; fi
-          if [ "$RELEASE_TYPE" -eq "prod" ]; echo "PRODUCTION RELEASE"; fi
+          if [ $RELEASE_TYPE == "night" ]; then echo "NIGHTLY RELEASE" && echo "WOWO"
+          elif [ $RELEASE_TYPE == "prod" ]; then echo "PRODUCTION RELEASE" && echo "MOMO"; fi
         env:
           RELEASE_TYPE: ${{ matrix.release_type }}
 
