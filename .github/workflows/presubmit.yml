@@ -1,0 +1,65 @@
+name: Test
+on:
+  release:
+    # https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows#release
+    types: [published]
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  build_and_upload_mac:
+    name: Build and Upload (macOS only)
+    strategy:
+      matrix:
+        include:
+          # We use only one python version because it would consume a large
+          # amount of github action minutes.
+          - os: macos-latest
+            python: 3.6
+            with_cc: OFF
+          - os: macos-latest
+            python: 3.7
+            with_cc: OFF
+          - os: macos-latest
+            python: 3.8
+            with_cc: OFF
+          - os: macos-latest
+            python: 3.9
+            with_cc: OFF
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: skip three python versions for nightly
+        run: |
+          [ -z "${{ github.event.action }}" ] && [ "${{ matrix.python }}" -ne "3.8" ] && exit 1
+
+      - name: success
+        run: echo "SUCCESS"
+
+  build_and_upload_windows:
+    name: Build and Upload (Windows only)
+    strategy:
+      matrix:
+        include:
+          # We use only one python version because it would consume a large
+          # amount of github action minutes.
+          - os: macos-latest
+            python: 3.6
+            with_cc: OFF
+          - os: macos-latest
+            python: 3.7
+            with_cc: OFF
+          - os: macos-latest
+            python: 3.8
+            with_cc: OFF
+          - os: macos-latest
+            python: 3.9
+            with_cc: OFF
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: skip three python versions for nightly
+        shell: powershell
+        run: |
+          if ([string]::IsNullOrEmpty("${{ github.event.action }}") && "${{ matrix.python }}" -ne "3.8") {exit 1}
+
+      - name: success
+        run: echo "SUCCESS"
