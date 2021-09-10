@@ -3,6 +3,7 @@ on:
   release:
     # https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows#release
     types: [published]
+  workflow_dispatch
     #schedule:
     #  - cron: "*/5 * * * *"
 
